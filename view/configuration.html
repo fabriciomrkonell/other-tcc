@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Porto - Configuração</title>
+		<link rel="shortcut icon" href="/img/icon.jpg">
+		<link rel="mask-icon" href="/img/favicon.jpg" color="black">
+		<link rel="stylesheet" type="text/css" href="/app/vendor/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="/app/css/configuration.css">
+	</head>
+	<body class="ng-cloak" ng-controller="ctrl">
+		<div id="map"></div>
+		<div id="legend">
+			<button type="button" class="btn btn-default" ng-click="getAreas()">Áreas</button>
+		  <button type="button" class="btn btn-default" ng-click="reload()">Atualizar</button>
+		</div>
+		<div class="modal fade in" tabindex="-1" role="dialog" ng-class="{ 'modal-show': modal }">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title">Áreas</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<form class="form-inline form-inline-modal">
+						  <div class="form-group">
+						    <input type="text" class="form-control" placeholder="Descrição" ng-model="modalEdit.description" ng-disabled="modalEdit === null" ng-blur="updateArea(modalEdit)" />
+						  </div>
+						  <button type="submit" class="btn btn-default" ng-disabled="modalEdit === null" ng-click="editArea(null)">Cancelar</button>
+						</form>
+		        <table class="table table-bordered table-condensed no-margin-bottom">
+		        	<thead>
+		        		<tr>
+		        			<th class="text-center" style="width: 100px">Cor</th>
+		        			<th>Descrição</th>
+		        			<th class="text-center" style="width: 70px">Visível</th>
+		        			<th class="text-center" style="width: 70px">Ativo</th>
+		        			<th class="text-center" style="width: 70px">Pontos</th>
+		        			<th class="text-center" style="width: 70px">Ações</th>
+		        		</tr>
+		        	</thead>
+		        	<tbody>
+		        		<tr ng-repeat="area in areas">
+		        			<td class="text-center">
+		        				<input class="input-color" type="color" ng-model="area.color" ng-change="updateArea(area)" />
+		        			</td>
+		        			<td>{{area.description}}</td>
+		        			<td class="text-center">
+		        				<input type="checkbox" ng-model="area.visible" ng-click="updateArea(area)" />
+		        			</td>
+									<td class="text-center">
+										<input type="checkbox" ng-model="area.active" ng-click="updateArea(area)" />
+									</td>
+									<td class="text-center">{{area.polygons.length}}</td>
+									<td class="text-center">
+										<button class="btn btn-primary btn-xs" ng-click="editArea(area)">
+											<i class="glyphicon glyphicon-pencil"></i>
+										</button>
+										<button class="btn btn-danger btn-xs" ng-click="deleteArea(area, $index)">
+											<i class="glyphicon glyphicon-remove"></i>
+										</button>
+									</td>
+		        		</tr>
+		        	</tbody>
+		        </table>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" ng-click="cancel()">Fechar</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAa79lG1wms2diBsx5jZiqGH4gm1rHRg88&libraries=geometry&callback=initMap&signed_in=true&libraries=drawing" async defer></script>
+		<script src="/app/vendor/angular/angular.min.js"></script>
+		<script src="/app/js/init.js"></script>
+		<script src="/app/js/configuration.js"></script>
+	</body>
+</html>
