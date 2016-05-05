@@ -1,122 +1,83 @@
 'use strict';
 
-var map = null;
+angular.module('app', []);
 
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 14,
-    center: new google.maps.LatLng(-28.2280632, -48.6567348),
-    mapTypeId: google.maps.MapTypeId.ROADMAP,
-    mapTypeControl: false,
-    zoomControl: true,
-	  mapTypeControl: false,
-	  scaleControl: false,
-	  streetViewControl: false,
-	  rotateControl: false
-  });
-};
+angular.element(document).ready(function() {
+  angular.bootstrap(document, ['app']);
+});
 
-angular.module('app').controller('ctrl', ['$scope', '$http', '$interval', function($scope, $http, $interval){
+angular.module('app').controller('configuration', ['$scope', '$http', function($scope, $http){
 
-  var interval = $interval(function(){
-    if(map !== null){
-      initMap();
-      $interval.cancel(interval);
+  $scope.data = {};
+  $scope.sensors = [];
+
+  function valid(sensor){
+    function isNullOrEmpty(a){
+      return (a == null) || (a == "") || !!(a.match(/^\s+$/));
     }
-  });
+    if(isNullOrEmpty(sensor.description)){
+      alert('Favor preencher o campo: Descrição.');
+      return false;
+    }
+    if(isNullOrEmpty(sensor.name)){
+      alert('Favor preencher o campo: Nome.');
+      return false;
+    }
+    return true;
+  };
 
-  function initMap(){
-    var drawingManager = new google.maps.drawing.DrawingManager({
-      drawingMode: google.maps.drawing.OverlayType.POLYLINE,
-      drawingControl: false
-    })
+  $scope.clear = function(){
+    angular.extend($scope.data, {
+      _id: null,
+      description: '',
+      name: '',
+      unit: ''
+    });
+  };
 
-    drawingManager.setMap(map);
+  $scope.getAll = function(){
+    $http.get('/sensor').success(function(data){
+      if(!data.error){
+        $scope.sensors = data.data;
+      }
+    });
+    $scope.clear();
+  };
 
-    map.controls[google.maps.ControlPosition.LEFT_TOP].push(document.getElementById('legend'));
+  $scope.persist = function(sensor){
+    if(sensor._id === null){
+      $scope.save('/sensor', sensor);
+    }else{
+      $scope.save('/sensor/update', sensor);
+    }
+  };
 
-    google.maps.event.addListener(drawingManager, 'polylinecomplete', function(polyline) {
-      var polys = [];
-      polyline.getPath().forEach(function(poly){
-        polys.push({ lat: poly.lat(), lng: poly.lng() })
+  $scope.edit = function(sensor){
+    angular.copy(sensor, $scope.data);
+  };
+
+  $scope.save = function(address, sensor){
+    if(valid(sensor)){
+      $http.post(address, sensor).success(function(data){
+        if(!data.error){
+          $scope.getAll();
+        }else{
+          alert('Não foi possível salvar/atualizar o sensor.');
+        }
       });
-
-      $http.post('/area', {
-        description: 'Nova área',
-        polygons: polys
-      }).success(function(data){
-        $scope.areas.push(data.data);
-        $scope.printArea();
-        polyline.setMap(null);
-        $scope.modal = true;
-      });
-    });
-
-    $scope.printArea();
+    }
   };
 
-  angular.extend($scope, {
-    modal: false,
-    areas: [],
-    modalEdit: null
-  });
-
-  $http.get('/area').success(function(data){
-    $scope.areas = data.data;
-    if(map !== null) $scope.printArea();
-  });
-
-  $scope.cancel = function(){
-    $scope.modal = false;
-  };
-
-	$scope.reload = function(){
-		window.location.reload();
-	};
-
-  $scope.getAreas = function(){
-    $scope.modal = true;
-  };
-
-  $scope.editArea = function(item){
-    $scope.modalEdit = item;
-  };
-
-  $scope.updateArea = function(item){
-    $scope.modalEdit = null;
-    $http.post('/area/update', {
-      _id: item._id,
-      color: item.color,
-      description: item.description,
-      active: item.active,
-      visible: item.visible
-    }).success(function(){
-      $scope.printArea();
+  $scope.delete = function(sensor){
+    $http.delete('/sensor/' + sensor._id).success(function(data){
+      if(!data.error){
+        $scope.getAll();
+      }else{
+        alert('Não foi possível excluir o sensor.');
+      }
     });
   };
 
-  $scope.deleteArea = function(item, index){
-    $scope.modalEdit = null;
-    $http.delete('/area/' + item._id).success(function(){
-      item._polygons.setMap(null);
-      $scope.areas.splice(index, 1);
-    });
-  };
-
-  $scope.printArea = function(){
-    $scope.areas.forEach(function(item, key){
-      if(item._polygons) item._polygons.setMap(null);
-      if(item.visible === false) return false;
-      item._polygons = new google.maps.Polygon({
-        paths: item.polygons,
-        strokeColor: item.color,
-        strokeOpacity: 0.2,
-        strokeWeight: 2,
-        fillColor: item.color,
-        fillOpacity: 0.35
-      });
-      item._polygons.setMap(map);
-    });
-  };
+  $scope.getAll();
 
 }])

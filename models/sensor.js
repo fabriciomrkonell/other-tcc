@@ -3,14 +3,12 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var Area = mongoose.model('Area', new Schema({
+var Sensor = mongoose.model('Sensor', new Schema({
   description: String,
-  color: String,
-  visible: Boolean,
-  active: Boolean,
-  polygons: Array,
+  name: String,
+  unit: String,
   update_at: Date,
   created_at: Date
 }));
 
-module.exports = Area;
+module.exports = Sensor;
