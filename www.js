@@ -3,7 +3,6 @@
 var express = require('express'),
     path = require('path'),
     routes_index = require('./routes/index'),
-    routes_area = require('./routes/area'),
     app = express(),
     server = require('http').Server(app),
     io = require('socket.io')(server),
@@ -31,7 +30,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', routes_index);
-app.use('/area', routes_area);
 
 app.use('/socket', function(req, res, next){
 	io.sockets.emit('news', { key: 1 });
