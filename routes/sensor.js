@@ -16,6 +16,7 @@ router.post('/', function(req, res, next) {
 	sensor.description = req.body.description;
   sensor.name = req.body.name;
   sensor.unit = req.body.unit;
+  sensor.chart = req.body.chart;
   sensor.update_at = new Date;
   sensor.created_at = new Date;
   sensor.save(function(err, data) {
@@ -32,6 +33,7 @@ router.post('/update', function(req, res, next) {
     sensor.description = req.body.description;
     sensor.name = req.body.name;
     sensor.unit = req.body.unit;
+    sensor.chart = req.body.chart;
     sensor.update_at = new Date;
     sensor.save(function(err, data) {
       res.send({ error: false, message: 'Sensor: success.', data: data });

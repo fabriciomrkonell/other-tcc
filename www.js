@@ -49,7 +49,7 @@ function persit(name, datavalue){
   rawdata.created_at = new Date;
   rawdata.save(function(err, data) {
     if (err) throw console.log({ error: true, message: 'RawData: error.', data: err });
-    io.sockets.emit('news', data);
+    io.sockets.emit('news-rawdata', data);
   });
 }
 
@@ -59,8 +59,19 @@ io.on('connection', function(socket) {
       name: name
     }).exec(function(err, data){
       if(data){
-        io.sockets.emit('news', data);
+        io.sockets.emit('news-rawdata', data);
       }
+    });
+  });
+  socket.on('rawdata-chart', function(name) {
+    RawData.find({
+      name: name
+    }).sort([['created_at', 'desc']]).exec(function(err, data){
+      var exit = [];
+      data.forEach(function(item){
+        exit.push(parseFloat(item.datavalue) || 0);
+      });
+      io.sockets.emit('news-rawdata-chart', { name: name, data: exit });
     });
   });
 });

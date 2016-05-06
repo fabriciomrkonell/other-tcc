@@ -7,6 +7,7 @@ var Sensor = mongoose.model('Sensor', new Schema({
   description: String,
   name: String,
   unit: String,
+  chart: Boolean,
   update_at: Date,
   created_at: Date
 }));

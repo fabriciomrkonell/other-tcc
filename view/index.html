@@ -19,7 +19,7 @@
 					  <div class="panel-heading">
 					    <h3 class="panel-title">Sensores</h3>
 					  </div>
-					  <div class="panel-body">
+					  <div class="panel-body panel-body-sensors">
 					  	<div class="col-sm-4 text-center" ng-repeat="(key, sensor) in sensors">
 					  		<div class="info-sensor">
 	        				<h4>{{sensor.description}}</h4>
@@ -31,9 +31,21 @@
 					  </div>
 					</div>
 				</div>
+				<div class="col-sm-6" ng-repeat="(key, sensor) in sensors" ng-if="sensor.chart">
+					<div class="panel panel-default">
+					  <div class="panel-heading">
+					    <h3 class="panel-title">{{sensor.description}}</h3>
+					  </div>
+					  <div class="panel-body">
+					  	<div id="container{{sensor.name}}" style="min-width: 310px; height: 200px; margin: 0 auto"></div>
+					  </div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>
+		<script src="/app/vendor/jquery/jquery.js"></script>
+		<script src="/app/vendor/highcharts/highcharts.min.js"></script>
 		<script src="/app/vendor/angular/angular.min.js"></script>
 		<script src="/app/js/index.js"></script>
 	</body>

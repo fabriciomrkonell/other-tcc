@@ -31,7 +31,8 @@ angular.module('app').controller('configuration', ['$scope', '$http', function($
       _id: null,
       description: '',
       name: '',
-      unit: ''
+      unit: '',
+      chart: false
     });
   };
 

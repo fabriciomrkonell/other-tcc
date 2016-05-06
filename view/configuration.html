@@ -34,6 +34,11 @@
 								    <label>Unidade</label>
 								    <input type="text" class="form-control" placeholder="Unidade" ng-model='data.unit'>
 								  </div>
+								  <div class="checkbox">
+								    <label>
+								      <input type="checkbox" ng-model="data.chart">Gráfico
+								    </label>
+								  </div>
 								  <button type="button" class="btn btn-success" ng-click="persist(data)">Salvar</button>
 								  <button type="button" class="btn btn-default" ng-click="clear()">Cancelar</button>
 								</form>
