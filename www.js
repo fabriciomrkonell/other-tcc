@@ -34,6 +34,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', routes_index);
 app.use('/sensor', routes_sensor);
 
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'tcc.fabricioronchi.com');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
+
 app.get('/rawdata-persist', function(req, res, next) {
   var itens = req.query;
   for(var key in itens){
@@ -57,7 +65,7 @@ io.on('connection', function(socket) {
   socket.on('rawdata', function(name) {
     RawData.findOne({
       name: name
-    }).exec(function(err, data){
+    }).sort([['created_at', 'desc']]).exec(function(err, data){
       if(data){
         io.sockets.emit('news-rawdata', data);
       }
@@ -66,7 +74,7 @@ io.on('connection', function(socket) {
   socket.on('rawdata-chart', function(name) {
     RawData.find({
       name: name
-    }).sort([['created_at', 'desc']]).exec(function(err, data){
+    }).sort([['created_at', 'asc']]).exec(function(err, data){
       var exit = [];
       data.forEach(function(item){
         exit.push(parseFloat(item.datavalue) || 0);
