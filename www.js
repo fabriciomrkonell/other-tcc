@@ -23,7 +23,6 @@ db.on('error', function(){
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 app.set('view cache', true);
-app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(path.join(__dirname, '/')));
 app.use(require('morgan')('combined'));
@@ -84,6 +83,6 @@ io.on('connection', function(socket) {
   });
 });
 
-var server = server.listen(app.get('port'), function(){
+var server = server.listen(80, function(){
 	console.log('WEB started.');
 });
